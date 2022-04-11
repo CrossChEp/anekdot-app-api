@@ -68,22 +68,39 @@ def get_random_anekdot_from_database() -> Anekdot:
     return random_anekdot
 
 
-def delete_anekdot_from_database_by_id(anekdot_id: int) -> None:
+def generate_anekdots_id_list(anekdots: List[Anekdot]) -> List[int]:
+    """generates list of anekdots' ids
+
+    :param anekdots: List[Anekdot]
+        (database anekdot object)
+    :return: List[int]
+    """
+    list_of_anekdots = []
+    for anekdot in anekdots:
+        list_of_anekdots.append(anekdot.id)
+    return list_of_anekdots
+
+
+def delete_anekdot_from_database_by_id(anekdot_id: int, author: User) -> None:
     """deletes anekdot from database
 
     :param anekdot_id: int
         (anekdot id)
+    :param author: User
+        (author of anekdot)
     :return: None
     """
-
     session: Session = next(generate_session())
     anekdot = session.query(Anekdot).filter_by(id=anekdot_id).first()
+    if anekdot.id not in generate_anekdots_id_list(author.anekdots):
+        raise HTTPException(status_code=405)
     raise_exception_if_anekdot_not_found(anekdot)
-    session.delete(anekdot)
-    session.commit()
+    current_session = session.object_session(anekdot)
+    current_session.delete(anekdot)
+    current_session.commit()
 
 
-def update_anekdot_in_database(anekdot_model: AnekdotUpdateModel) -> None:
+def update_anekdot_in_database(anekdot_model: AnekdotUpdateModel, author: User) -> None:
     """Updates anekdot's content
 
     :param anekdot_model: AnekdotUpdateModel
@@ -93,6 +110,8 @@ def update_anekdot_in_database(anekdot_model: AnekdotUpdateModel) -> None:
 
     session: Session = next(generate_session())
     anekdot: Anekdot = session.query(Anekdot).filter_by(id=anekdot_model.id).first()
+    if anekdot.id not in generate_anekdots_id_list(author.anekdots):
+        raise HTTPException(status_code=405)
     raise_exception_if_anekdot_not_found(anekdot)
     anekdot.content = anekdot_model.content
     session.commit()

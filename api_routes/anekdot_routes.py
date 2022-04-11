@@ -34,10 +34,10 @@ def get_random_anekdot() -> Anekdot:
 
 
 @anekdot_route.delete('/api/anekdot/{anekdot_id}')
-def delete_anekdot(anekdot_id: int) -> None:
-    delete_anekdot_from_database_by_id(anekdot_id)
+def delete_anekdot(anekdot_id: int, author: User = Depends(get_current_user)) -> None:
+    delete_anekdot_from_database_by_id(anekdot_id, author)
 
 
 @anekdot_route.put('/api/anekdot/')
-def update_anekdot(anekdot_model: AnekdotUpdateModel) -> None:
-    update_anekdot_in_database(anekdot_model)
+def update_anekdot(anekdot_model: AnekdotUpdateModel, author: User = Depends(get_current_user)) -> None:
+    update_anekdot_in_database(anekdot_model, author)
