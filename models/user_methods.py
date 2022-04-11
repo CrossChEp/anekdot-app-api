@@ -1,6 +1,7 @@
 from typing import List
 
 import bcrypt
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from middlewares import generate_session
@@ -51,6 +52,21 @@ def hash_password(password: str) -> bytes:
     return hashed_password
 
 
+def is_user_in_database_exists(user: UserModel, session: Session) -> bool:
+    """checks is user with nickname of user is already exists
+
+    :param user: UserModel
+        (model of user)
+    :param session: Session
+        (Current database session)
+    :return: bool
+    """
+    database_user = session.query(User).filter_by(username=user.username).all()
+    if database_user:
+        return True
+    return False
+
+
 def register_user(user_data: UserModel) -> None:
     """encrypts user's password and adds him to database
 
@@ -60,6 +76,8 @@ def register_user(user_data: UserModel) -> None:
     """
 
     session = next(generate_session())
+    if is_user_in_database_exists(user_data, session):
+        raise HTTPException(status_code=405, detail='user with such nickname already exists')
     user_data.password = hash_password(user_data.password)
     user = User(**user_data.dict())
     session.add(user)
