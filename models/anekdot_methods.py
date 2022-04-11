@@ -129,5 +129,7 @@ def add_anekdot_to_liked(current_user: User, anekdot_id: int) -> None:
     """
     session = next(generate_session())
     anekdot = session.query(Anekdot).filter_by(id=anekdot_id).first()
+    if current_user.id in generate_anekdots_id_list(anekdot.liked_users):
+        raise HTTPException(status_code=405, detail='You have already liked this')
     anekdot.liked_users.append(current_user)
     session.commit()
