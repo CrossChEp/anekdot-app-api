@@ -1,10 +1,11 @@
 from typing import List
 
 import bcrypt
+from sqlalchemy.orm import Session
 
 from middlewares import generate_session
 from models.anekdot_methods import raise_exception_if_anekdot_not_found
-from schemas import UserModel, UserGetModel
+from schemas import UserModel, UserGetModel, UserRequestModel
 from store import User
 
 
@@ -64,3 +65,28 @@ def get_user_from_database_by_id(user_id: int) -> UserGetModel:
     raise_exception_if_anekdot_not_found(user)
     user_model = generate_user_get_model(user)
     return user_model
+
+
+def get_user(user_data: UserRequestModel) -> UserGetModel:
+    session: Session = next(generate_session())
+    user_data = session.query(User).filter_by(**user_data.dict()).first()
+    user_model = generate_user_get_model(user_data)
+    return user_model
+
+
+def get_user_private(user_data: UserRequestModel) -> User:
+    session: Session = next(generate_session())
+    user_data_without_empty_fields = clear_user_data_from_nones(user_data)
+    user_data = session.query(User).filter_by(**user_data_without_empty_fields).first()
+    return user_data
+
+
+def clear_user_data_from_nones(user_model) -> dict:
+    user_dict = {}
+    for key, value in user_model.dict().items():
+        if value is None:
+            continue
+        user_dict[key] = value
+    return user_dict
+
+
