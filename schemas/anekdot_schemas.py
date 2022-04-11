@@ -6,3 +6,10 @@ class AnekdotModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class AnekdotUpdateModel(AnekdotModel):
+    id: int
+
+    class Config:
+        orm_mode = True

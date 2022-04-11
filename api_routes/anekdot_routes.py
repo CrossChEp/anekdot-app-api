@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter
 from models import add_anekdot_to_database, get_all_anekdots_from_db, get_anekdot_from_database_by_id, \
-    get_random_anekdot_from_database, delete_anekdot_from_database_by_id
-from schemas import AnekdotModel
+    get_random_anekdot_from_database, delete_anekdot_from_database_by_id, update_anekdot_in_database
+from schemas import AnekdotModel, AnekdotUpdateModel
 from store import Anekdot
 
 anekdot_route = APIRouter()
@@ -32,3 +32,8 @@ def get_random_anekdot() -> Anekdot:
 @anekdot_route.delete('/api/anekdot/{anekdot_id}')
 def delete_anekdot(anekdot_id: int) -> None:
     delete_anekdot_from_database_by_id(anekdot_id)
+
+
+@anekdot_route.put('/api/anekdot/')
+def update_anekdot(anekdot_model: AnekdotUpdateModel) -> None:
+    update_anekdot_in_database(anekdot_model)
