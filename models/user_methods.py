@@ -10,6 +10,13 @@ from store import User
 
 
 def generate_user_get_model(user: User) -> UserGetModel:
+    """generates UserGetModel from User
+
+    :param user: User
+        (database object of user)
+    :return: UserGetModel
+    """
+
     user_model = UserGetModel(
         id=user.id,
         username=user.username
@@ -18,6 +25,13 @@ def generate_user_get_model(user: User) -> UserGetModel:
 
 
 def generate_user_get_model_list(users: List[User]) -> List[UserGetModel]:
+    """generates list of userGetModes from list of database's user's object
+
+    :param users: List[User]
+        (list of database user's object)
+    :return: List[UserGetModel]
+    """
+
     user_models = []
     for user in users:
         user_model = generate_user_get_model(user)
@@ -53,6 +67,11 @@ def register_user(user_data: UserModel) -> None:
 
 
 def get_all_users_from_database() -> List[UserGetModel]:
+    """gets all users from database
+
+    :return: List[UserGetModel]
+    """
+
     session = next(generate_session())
     users = session.query(User).all()
     users = generate_user_get_model_list(users)
@@ -60,6 +79,13 @@ def get_all_users_from_database() -> List[UserGetModel]:
 
 
 def get_user_from_database_by_id(user_id: int) -> UserGetModel:
+    """gets user from database using user's id
+
+    :param user_id: int
+        (user's id)
+    :return: UserGetModel
+    """
+
     session = next(generate_session())
     user = session.query(User).filter_by(id=user_id).first()
     raise_exception_if_anekdot_not_found(user)
@@ -68,6 +94,13 @@ def get_user_from_database_by_id(user_id: int) -> UserGetModel:
 
 
 def get_user(user_data: UserRequestModel) -> UserGetModel:
+    """gets user using UserRequestModel
+
+    :param user_data: UserRequestModel
+        (model of user)
+    :return:UserGetModel
+    """
+
     session: Session = next(generate_session())
     user_data = session.query(User).filter_by(**user_data.dict()).first()
     user_model = generate_user_get_model(user_data)
@@ -75,6 +108,13 @@ def get_user(user_data: UserRequestModel) -> UserGetModel:
 
 
 def get_user_private(user_data: UserRequestModel) -> User:
+    """gets all user's database object, including user's password
+
+    :param user_data: UserRequestModel
+        (model of user)
+    :return: User
+    """
+
     session: Session = next(generate_session())
     user_data_without_empty_fields = clear_user_data_from_nones(user_data)
     user_data = session.query(User).filter_by(**user_data_without_empty_fields).first()
@@ -82,6 +122,12 @@ def get_user_private(user_data: UserRequestModel) -> User:
 
 
 def clear_user_data_from_nones(user_model) -> dict:
+    """deletes all empty fields from model
+
+    :param user_model:
+        (model with some fields)
+    :return: dict
+    """
     user_dict = {}
     for key, value in user_model.dict().items():
         if value is None:
