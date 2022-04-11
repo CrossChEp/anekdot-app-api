@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from middlewares import generate_session
 from schemas import AnekdotModel, AnekdotUpdateModel
 from store import Anekdot, User
+from store.db_model import AnekdotAndUserRelation
 
 
 def raise_exception_if_anekdot_not_found(anekdot):
@@ -23,11 +24,11 @@ def add_anekdot_to_database(anekdot_model: AnekdotModel, author: User) -> None:
     :return: None
     """
     session = next(generate_session())
+    author = session.query(User).filter_by(id=author.id).first()
     anekdot = Anekdot(**anekdot_model.dict())
     author.anekdots.append(anekdot)
-    current_session = session.object_session(anekdot)
-    current_session.add(anekdot)
-    current_session.commit()
+    session.add(anekdot)
+    session.commit()
 
 
 def get_all_anekdots_from_db() -> List[Anekdot]:
@@ -116,3 +117,17 @@ def update_anekdot_in_database(anekdot_model: AnekdotUpdateModel, author: User) 
     anekdot.content = anekdot_model.content
     session.commit()
 
+
+def add_anekdot_to_liked(current_user: User, anekdot_id: int) -> None:
+    """adds anekdot to list of liked anekdots
+
+    :param current_user: User
+        (current user)
+    :param anekdot_id: int
+        (id of anekdot)
+    :return: None
+    """
+    session = next(generate_session())
+    anekdot = session.query(Anekdot).filter_by(id=anekdot_id).first()
+    anekdot.liked_users.append(current_user)
+    session.commit()

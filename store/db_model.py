@@ -1,14 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import declarative_base, relationship
 
 base = declarative_base()
 
 
-class AnekdotAndUserRelation(base):
-    __tablename__ = 'anekdot_and_user_relation'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    anekdot_id = Column(Integer, ForeignKey('anekdots.id'))
+AnekdotAndUserRelation = Table(
+    'anekdot_and_user_relation',
+    base.metadata,
+    Column('id', Integer, primary_key=True),
+    Column('user_id', Integer, ForeignKey('users.id')),
+    Column('anekdot_id', Integer, ForeignKey('anekdots.id'))
+)
 
 
 class User(base):
@@ -17,7 +19,7 @@ class User(base):
     username = Column(String)
     password = Column(String)
     anekdots = relationship('Anekdot', backref='user')
-    liked = relationship('AnekdotAndUserRelation', backref='user')
+    liked = relationship('Anekdot', secondary=AnekdotAndUserRelation, backref='user_liked')
 
 
 class Anekdot(base):
@@ -25,4 +27,4 @@ class Anekdot(base):
     id = Column(Integer, primary_key=True)
     content = Column(String)
     author = Column(Integer, ForeignKey('users.id'))
-    liked_users = relationship('AnekdotAndUserRelation', backref='anekdot')
+    liked_users = relationship('User', secondary=AnekdotAndUserRelation, backref='anekdot')

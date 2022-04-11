@@ -136,6 +136,7 @@ def get_user_private(user_data: UserRequestModel) -> User:
     session: Session = next(generate_session())
     user_data_without_empty_fields = clear_user_data_from_nones(user_data)
     user_data = session.query(User).filter_by(**user_data_without_empty_fields).first()
+    session.close()
     return user_data
 
 
