@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 from models import add_anekdot_to_database, get_all_anekdots_from_db, get_anekdot_from_database_by_id, \
-    get_random_anekdot_from_database
+    get_random_anekdot_from_database, delete_anekdot_from_database_by_id
 from schemas import AnekdotModel
 from store import Anekdot
 
@@ -27,3 +27,8 @@ def get_concrete_anekdot(anekdot_id: int) -> Anekdot:
 @anekdot_route.get('/api/anekdots/random')
 def get_random_anekdot() -> Anekdot:
     return get_random_anekdot_from_database()
+
+
+@anekdot_route.delete('/api/anekdot/{anekdot_id}')
+def delete_anekdot(anekdot_id: int) -> None:
+    delete_anekdot_from_database_by_id(anekdot_id)

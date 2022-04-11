@@ -60,3 +60,12 @@ def get_random_anekdot_from_database() -> Anekdot:
     random_anekdot_id = random.randint(1, len(all_anekdots))
     random_anekdot = get_anekdot_from_database_by_id(random_anekdot_id)
     return random_anekdot
+
+
+def delete_anekdot_from_database_by_id(anekdot_id: int) -> None:
+    session: Session = next(generate_session())
+    anekdot = session.query(Anekdot).filter_by(id=anekdot_id).first()
+    if not anekdot:
+        raise HTTPException(status_code=405, detail='No such anekdot')
+    session.delete(anekdot)
+    session.commit()
