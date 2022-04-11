@@ -1,1 +1,2 @@
 from api_routes.anekdot_routes import anekdot_route
+from api_routes.user_routes import register_user
