@@ -1,17 +1,21 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from api_routes.auth_router import get_current_user
+from middlewares import generate_session
 from models import add_anekdot_to_database, get_all_anekdots_from_db, get_anekdot_from_database_by_id, \
     get_random_anekdot_from_database, delete_anekdot_from_database_by_id, update_anekdot_in_database
 from schemas import AnekdotModel, AnekdotUpdateModel
-from store import Anekdot
+from store import Anekdot, User
 
 anekdot_route = APIRouter()
 
 
 @anekdot_route.post('/api/anekdot')
-def post_anekdot(anekdot_model: AnekdotModel) -> None:
-    add_anekdot_to_database(anekdot_model)
+def post_anekdot(anekdot_model: AnekdotModel, author: User = Depends(get_current_user)) -> None:
+    add_anekdot_to_database(anekdot_model, author)
 
 
 @anekdot_route.get('/api/anekdots')

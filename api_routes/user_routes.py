@@ -1,7 +1,9 @@
 from typing import List
 
 from fastapi import APIRouter
+from fastapi.params import Depends
 
+from api_routes.auth_router import get_current_user
 from models import register_user, get_all_users_from_database, get_user_from_database_by_id
 from schemas import UserModel, UserGetModel
 from store import User

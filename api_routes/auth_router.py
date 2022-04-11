@@ -8,8 +8,8 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from middlewares import generate_session
-from models import get_user_from_database_by_id, authenticate_user, create_access_token
-from schemas import TokenData, Token, UserGetModel
+from models import get_user_from_database_by_id, authenticate_user, create_access_token, get_user_private
+from schemas import TokenData, Token, UserGetModel, UserRequestModel
 from store import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -32,7 +32,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credetials_exception
 
-    user = get_user_from_database_by_id(token_data.id)
+    user = get_user_private(UserRequestModel(id=token_data.id))
     if user is None:
         raise credetials_exception
     return user

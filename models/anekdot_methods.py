@@ -3,10 +3,9 @@ from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
 from middlewares import generate_session
 from schemas import AnekdotModel, AnekdotUpdateModel
-from store import Anekdot
+from store import Anekdot, User
 
 
 def raise_exception_if_anekdot_not_found(anekdot):
@@ -14,17 +13,21 @@ def raise_exception_if_anekdot_not_found(anekdot):
         raise HTTPException(status_code=404, detail='not found')
 
 
-def add_anekdot_to_database(anekdot_model: AnekdotModel) -> None:
+def add_anekdot_to_database(anekdot_model: AnekdotModel, author: User) -> None:
     """adds anekdot to database
 
     :param anekdot_model: AnekdotAdd
         (model of anekdot that will be posted into database
+    :param author: User
+        (future author of anekdot)
     :return: None
     """
     session = next(generate_session())
     anekdot = Anekdot(**anekdot_model.dict())
-    session.add(anekdot)
-    session.commit()
+    author.anekdots.append(anekdot)
+    current_session = session.object_session(anekdot)
+    current_session.add(anekdot)
+    current_session.commit()
 
 
 def get_all_anekdots_from_db() -> List[Anekdot]:
