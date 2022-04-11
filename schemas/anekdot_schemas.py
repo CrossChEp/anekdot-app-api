@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class AnekdotAdd(BaseModel):
+class AnekdotModel(BaseModel):
     content: str
 
     class Config:

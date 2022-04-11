@@ -1,1 +1,1 @@
-from schemas.anekdot_schemas import AnekdotAdd
+from schemas.anekdot_schemas import AnekdotModel
