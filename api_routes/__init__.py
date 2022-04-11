@@ -1,0 +1,1 @@
+from api_routes.anekdot_routes import anekdot_route

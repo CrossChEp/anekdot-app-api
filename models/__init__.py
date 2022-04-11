@@ -1,0 +1,1 @@
+from models.anekdot_methods import add_anekdot_to_database

@@ -1,1 +1,1 @@
-from store.db_model import base, User, Liked
+from store.db_model import base, User, Anekdot
